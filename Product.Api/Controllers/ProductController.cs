@@ -66,5 +66,20 @@ namespace Product.Api.Controllers
                 return NotFound();
             }
         }
+
+        [HttpPut("{id}/stock")]
+        public async Task<ActionResult> UpdateStock(int id, [FromBody] int newStock)
+        {
+            try
+            {
+                await _productService.UpdateStockAsync(id, newStock);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
     }
 }

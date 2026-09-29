@@ -14,6 +14,7 @@ namespace Product.Application.Services
         Task<ProductDto> CreateAsync(ProductCreateDto dto);
         Task UpdateAsync(int id, ProductUpdateDto dto);
         Task DeleteAsync(int id);
+        Task UpdateStockAsync(int id, int newStock);
 
     }
 }

@@ -60,5 +60,13 @@ namespace Product.Application.Services
             await _repository.DeleteAsync(product);
         }
 
+        public async Task UpdateStockAsync(int id, int newStock)
+        {
+            var product = await _repository.GetByIdAsync(id);
+            if (product == null) throw new KeyNotFoundException("Producto no encontrado");
+
+            await _repository.UpdateAsync(product);
+
+        }
     }
 }
