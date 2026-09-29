@@ -42,29 +42,15 @@ namespace Customer.Api.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, [FromBody] CustomerUpdateDto dto)
         {
-            try
-            {
-                await _customerService.UpdateAsync(id, dto);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            await _customerService.UpdateAsync(id, dto);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            try
-            {
-                await _customerService.DeleteAsync(id);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            await _customerService.DeleteAsync(id);
+            return NoContent();
         }
 
     }

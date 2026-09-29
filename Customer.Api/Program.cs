@@ -4,8 +4,18 @@ using Customer.Application.Services;
 using Customer.Domain.Repositories;
 using Customer.Infrastructure.Data;
 using Customer.Infrastructure.Repositories;
+using Customer.API.Middlewares;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration
+        .MinimumLevel.Information() 
+        .WriteTo.Console()         
+        .WriteTo.File("Logs/customer-log-.txt", rollingInterval: RollingInterval.Day); 
+});
 
 // Agregar servicios de Controladores
 builder.Services.AddControllers();
@@ -37,6 +47,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Agregar el middleware de manejo global de excepciones
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

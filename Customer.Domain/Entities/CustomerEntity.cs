@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Customer.Domain.ValueObjects;
 
 namespace Customer.Domain.Entities
 {
@@ -11,25 +8,26 @@ namespace Customer.Domain.Entities
         public int Id { get; private set; }
         public string Name { get; private set; } = string.Empty;
         public string Email { get; private set; } = string.Empty;
-        public string Address { get; private set; } = string.Empty;
+
+        public AddressVO Address { get; private set; } = null!; 
+
         public DateTime RegistrationDate { get; private set; }
 
         protected CustomerEntity() { }
 
-        public CustomerEntity(string name, string email, string address)
+        public CustomerEntity(string name, string email, AddressVO address)
         {
             Name = name;
             Email = email;
             Address = address;
-            RegistrationDate = DateTime.UtcNow; 
+            RegistrationDate = DateTime.UtcNow;
         }
 
-        public void UpdateDetails(string name, string email, string address)
+        public void UpdateDetails(string name, string email, AddressVO address)
         {
             Name = name;
             Email = email;
             Address = address;
         }
-
     }
 }

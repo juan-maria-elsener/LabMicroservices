@@ -2,11 +2,7 @@
 using Customer.Application.DTOs;
 using Customer.Domain.Entities;
 using Customer.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Customer.Domain.ValueObjects;
 
 namespace Customer.Application.Services
 {
@@ -35,7 +31,10 @@ namespace Customer.Application.Services
 
         public async Task<CustomerDto> CreateAsync(CustomerCreateDto dto)
         {
-            var customer = _mapper.Map<CustomerEntity>(dto);
+            var addressVO = new AddressVO(dto.Street, dto.City, dto.Country);
+
+            var customer = new CustomerEntity(dto.Name, dto.Email, addressVO);
+
             await _repository.AddAsync(customer);
             return _mapper.Map<CustomerDto>(customer);
         }
@@ -43,20 +42,23 @@ namespace Customer.Application.Services
         public async Task UpdateAsync(int id, CustomerUpdateDto dto)
         {
             var customer = await _repository.GetByIdAsync(id);
-            if (customer == null) throw new KeyNotFoundException("Cliente no encontrado");
+            if (customer == null) throw new KeyNotFoundException();
 
-            customer.UpdateDetails(dto.Name, dto.Email, dto.Address);
+            var addressVO = new AddressVO(dto.Street, dto.City, dto.Country);
+            customer.UpdateDetails(dto.Name, dto.Email, addressVO);
+
             await _repository.UpdateAsync(customer);
         }
 
         public async Task DeleteAsync(int id)
         {
-            var customer = await _repository.GetByIdAsync(id);
-            if (customer == null) throw new KeyNotFoundException("Cliente no encontrado");
 
-            await _repository.DeleteAsync(customer);
+            var customer = await _repository.GetByIdAsync(id);
+
+            if (customer != null)
+            {
+                await _repository.DeleteAsync(customer);
+            }
         }
     }
-
 }
-
