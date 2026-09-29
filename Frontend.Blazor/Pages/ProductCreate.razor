@@ -1,0 +1,50 @@
+﻿@page "/product-create"
+@using Frontend.Blazor.Models
+@using Frontend.Blazor.Services
+@inject ProductApiService ProductService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Nuevo Producto</PageTitle>
+
+<h3>Registrar Nuevo Producto</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="@product" OnValidSubmit="HandleSubmit">
+            
+            <div class="mb-3">
+                <label class="form-label">Nombre del Producto</label>
+                <InputText @bind-Value="product.Name" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Precio</label>
+                <InputNumber @bind-Value="product.Price" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Cantidad en Stock</label>
+                <InputNumber @bind-Value="product.StockQuantity" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancelar</button>
+
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private ProductCreateDto product = new();
+
+    private async Task HandleSubmit()
+    {
+        await ProductService.CreateProductAsync(product);
+        NavigationManager.NavigateTo("/products");
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/products");
+    }
+}

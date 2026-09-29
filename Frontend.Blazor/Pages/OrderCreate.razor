@@ -1,0 +1,99 @@
+﻿@page "/order-create"
+@using Frontend.Blazor.Models
+@using Frontend.Blazor.Services
+@inject OrderApiService OrderService
+@inject CustomerApiService CustomerService
+@inject ProductApiService ProductService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Nueva Orden</PageTitle>
+
+<h3>Crear Nueva Orden de Compra</h3>
+
+@if (customers == null || products == null)
+{
+    <p><em>Cargando datos...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+            <EditForm Model="@order" OnValidSubmit="HandleSubmit">
+                
+                <div class="mb-3">
+                    <label class="form-label">Seleccionar Cliente</label>
+                    <InputSelect @bind-Value="order.CustomerId" class="form-select">
+                        <option value="0">-- Seleccione un Cliente --</option>
+                        @foreach (var c in customers)
+                        {
+                            <option value="@c.Id">@c.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Seleccionar Producto</label>
+                    <InputSelect @bind-Value="singleItem.ProductId" class="form-select">
+                        <option value="0">-- Seleccione un Producto --</option>
+                        @foreach (var p in products)
+                        {
+                            <option value="@p.Id">@p.Name (Stock: @p.StockQuantity)</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Cantidad a Comprar</label>
+                    <InputNumber @bind-Value="singleItem.Quantity" class="form-control" min="1" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">@errorMessage</div>
+                }
+
+                <button type="submit" class="btn btn-success">Generar Orden</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private OrderCreateDto order = new();
+    private OrderItemCreateDto singleItem = new() { Quantity = 1 };
+    
+    private List<CustomerDto>? customers;
+    private List<ProductDto>? products;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        customers = await CustomerService.GetCustomersAsync();
+        products = await ProductService.GetProductsAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        errorMessage = string.Empty;
+        try
+        {
+            if (order.CustomerId == 0 || singleItem.ProductId == 0)
+            {
+                errorMessage = "Debe seleccionar un cliente y un producto.";
+                return;
+            }
+
+            order.Items.Clear();
+            order.Items.Add(singleItem);
+
+            await OrderService.CreateOrderAsync(order);
+            
+            NavigationManager.NavigateTo("/orders"); 
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}

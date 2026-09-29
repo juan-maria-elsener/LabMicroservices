@@ -20,6 +20,17 @@ builder.Host.UseSerilog((context, configuration) =>
 // Agregar servicios de Controladores
 builder.Services.AddControllers();
 
+// Configuración de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Configuración de Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -48,13 +59,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Agregar el middleware de manejo global de excepciones
-app.UseMiddleware<GlobalExceptionMiddleware>();
-
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseCors("AllowBlazor");
 
+app.UseAuthorization();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.MapControllers();
 
 app.Run();

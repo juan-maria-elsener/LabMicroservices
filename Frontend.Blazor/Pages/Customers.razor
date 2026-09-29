@@ -1,0 +1,70 @@
+﻿@page "/customers"
+@using Frontend.Blazor.Models
+@using Frontend.Blazor.Services
+@inject CustomerApiService CustomerService
+
+<PageTitle>Clientes</PageTitle>
+
+<h3>Gestión de Clientes</h3>
+
+<div class="mb-3">
+    <a href="/customer-create" class="btn btn-primary">Nuevo Cliente</a>
+</div>
+
+@if (customers == null)
+{
+    <p><em>Cargando clientes desde el Microservicio...</em></p>
+}
+else if (!customers.Any())
+{
+    <p>No hay clientes registrados en la base de datos.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Ciudad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in customers)
+            {
+                <tr>
+                    <td>@customer.Id</td>
+                    <td>@customer.Name</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.City</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteCustomer(customer.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+   
+    private List<CustomerDto>? customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomers();
+    }
+
+    private async Task LoadCustomers()
+    {
+        customers = await CustomerService.GetCustomersAsync();
+    }
+
+    private async Task DeleteCustomer(int id)
+    {
+        await CustomerService.DeleteCustomerAsync(id);
+        await LoadCustomers(); 
+    }
+}

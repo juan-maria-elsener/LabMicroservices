@@ -1,0 +1,60 @@
+﻿@page "/orders"
+@using Frontend.Blazor.Models
+@using Frontend.Blazor.Services
+@inject OrderApiService OrderService
+
+<PageTitle>Historial de Órdenes</PageTitle>
+
+<h3>Historial de Órdenes</h3>
+
+@if (orders == null)
+{
+    <p><em>Cargando historial desde el microservicio...</em></p>
+}
+else if (!orders.Any())
+{
+    <p>No hay órdenes registradas en el sistema.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Nro. Orden</th>
+                <th>Fecha</th>
+                <th>ID Cliente</th>
+                <th>Total de la Orden</th>
+                <th>Detalle de Productos</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@order.CustomerId</td>
+                    <td>$@order.TotalAmount</td>
+                    <td>
+                        <ul class="mb-0">
+                            @foreach (var item in order.Items)
+                            {
+                                <li>ID Prod: @item.ProductId (Cantidad: @item.Quantity)</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<OrderDto>? orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Llamamos al microservicio para traer todas las órdenes
+        orders = await OrderService.GetOrdersAsync();
+    }
+}

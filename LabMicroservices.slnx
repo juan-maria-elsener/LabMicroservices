@@ -17,4 +17,5 @@
     <Project Path="Product.Domain/Product.Domain.csproj" />
     <Project Path="Product.Infrastructure/Product.Infrastructure.csproj" />
   </Folder>
+  <Project Path="Frontend.Blazor/Frontend.Blazor.csproj" Id="fb8edd69-8bce-49b6-b372-8f8b05b63b5c" />
 </Solution>

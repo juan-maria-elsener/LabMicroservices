@@ -1,0 +1,68 @@
+﻿@page "/products"
+@using Frontend.Blazor.Models
+@using Frontend.Blazor.Services
+@inject ProductApiService ProductService
+
+<PageTitle>Productos</PageTitle>
+
+<h3>Gestión de Productos</h3>
+
+<div class="mb-3">
+    <a href="/product-create" class="btn btn-primary">Nuevo Producto</a>
+</div>
+
+@if (products == null)
+{
+    <p><em>Cargando productos...</em></p>
+}
+else if (!products.Any())
+{
+    <p>No hay productos registrados.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Id</td>
+                    <td>$@product.Price</td>
+                    <td>@product.StockQuantity</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteProduct(product.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ProductDto>? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        products = await ProductService.GetProductsAsync();
+    }
+
+    private async Task DeleteProduct(int id)
+    {
+        await ProductService.DeleteProductAsync(id);
+        await LoadProducts();
+    }
+}
